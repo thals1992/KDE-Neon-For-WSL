@@ -3,7 +3,7 @@ IF %ERRORLEVEL% == 0 (ECHO Administrator check passed...) ELSE (ECHO You need to
 COLOR 1F
 SET GITORG=DesktopECHO
 SET GITPRJ=kWSL
-SET BRANCH=master
+SET BRANCH=devuan
 SET BASE=https://github.com/%GITORG%/%GITPRJ%/raw/%BRANCH%
 
 REM ## Enable WSL if required
@@ -35,7 +35,7 @@ SET _rlt=%DISTROFULL:~2,2%
 IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
 SET GO="%DISTROFULL%\LxRunOffline.exe" r -n "%DISTRO%" -c
 REM ## Download Ubuntu and install packages
-IF NOT EXIST "%TEMP%\Ubuntu2004.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\Ubuntu2004.tar.gz'"
+IF NOT EXIST "%TEMP%\devuan.tgz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://github.com/DesktopECHO/kWSL/raw/devuan/devuan.tgz -destination '%TEMP%\devuan.tgz'"
 %DISTROFULL:~0,1%: & MKDIR "%DISTROFULL%" & CD "%DISTROFULL%" & MKDIR logs > NUL
 (ECHO [kWSL Inputs] && ECHO. && ECHO.   Distro: %DISTRO% && ECHO.     Path: %DISTROFULL% && ECHO. RDP Port: %RDPPRT% && ECHO. SSH Port: %SSHPRT% && ECHO.DPI Scale: %WINDPI% && ECHO.) > ".\logs\%TIME:~0,2%%TIME:~3,2%%TIME:~6,2% kWSL Inputs.log"
 IF NOT EXIST "%TEMP%\LxRunOffline.exe" POWERSHELL.EXE -Command "wget %BASE%/LxRunOffline.exe -UseBasicParsing -OutFile '%TEMP%\LxRunOffline.exe'"
@@ -128,7 +128,7 @@ REM %GO% "rm /usr/lib/systemd/system/dbus-org.freedesktop.login1.service /usr/sh
 REM %GO% "rm /usr/share/dbus-1/services/org.freedesktop.systemd1.service /usr/share/dbus-1/system-services/org.freedesktop.systemd1.service /usr/share/dbus-1/system.d/org.freedesktop.systemd1.conf /usr/share/polkit-1/actions/org.freedesktop.systemd1.policy"
 %GO% "unamestr=`uname -r` ; if [[ "$unamestr" == '4.4.0-17763-Microsoft' ]]; then apt-get purge -y plasma-discover ; sed -i 's/discover/muon/g' /tmp/kWSL/dist/etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc ; ln -s /usr/bin/software-properties-qt /usr/bin/software-properties-kde ; fi" > NUL
 %GO% "cp -Rp /tmp/kWSL/dist/* / ; cp -Rp /tmp/kWSL/dist/etc/skel/.cache /root ; cp -Rp /tmp/kWSL/dist/etc/skel/.config /root ; cp -Rp /tmp/kWSL/dist/etc/skel/.local /root"
-START /MIN /WAIT "Updates for WSL1 Compatibility" "%DISTROFULL%\LxRunOffline.exe" "r" "-n" "%DISTRO%" "-c" "dpkg -i /tmp/kWSL/deb/libkf5activitiesstats*.deb /tmp/kWSL/deb/kactivitymanagerd*.deb /tmp/kWSL/deb/kinfocenter*.deb /tmp/kWSL/deb/klassy*.deb ; apt-mark hold libkf5activitiesstats1 kactivitymanagerd kinfocenter ; DEBIAN_FRONTEND=noninteractive apt-get -qqy dist-upgrade"
+START /MIN /WAIT "Updates for WSL1 Compatibility" "%DISTROFULL%\LxRunOffline.exe" "r" "-n" "%DISTRO%" "-c" "dpkg -i /tmp/kWSL/deb/libkf5activitiesstats*.deb /tmp/kWSL/deb/kactivitymanagerd*.deb ; apt-mark hold libkf5activitiesstats1 kactivitymanagerd ; DEBIAN_FRONTEND=noninteractive apt-get -qqy dist-upgrade"
 SET RUNEND=%date% @ %time:~0,5%
 CD %DISTROFULL% 
 ECHO:
