@@ -15,6 +15,8 @@ clear
 rm /usr/bin/systemctl ; cd / ; tar xf /etc/systemctl-service-shim.tar
 /usr/local/bin/dbus-watchdog &
 clear
+rm -rf /tmp/.ICE-unix
+rm /etc/xdg/autostart/pulseaudio.desktop
 rm /etc/xdg/autostart/polkit-kde-authentication-agent-1.desktop
 rm /etc/dbus-1/system.d/pulseaudio-system.conf
 rm /lib/systemd/user/plasma-kglobalaccel.service
