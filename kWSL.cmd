@@ -20,6 +20,7 @@ IF EXIST .\CMD.EXE CD ..\..
 
 ECHO [kWSL Installer: Modified December 14th, 2022]
 ECHO:
+ECHO Script started at [%TIME:~0,8%] [%DATE%]
 SET RDPPRT=3399& SET /p RDPPRT=Port number for xRDP traffic or hit Enter to use default [3399]: 
 SET SSHPRT=3322& SET /p SSHPRT=Port number for SSHd traffic or hit Enter to use default [3322]: 
                  SET /p WINDPI=Set a custom DPI scale, or hit Enter for Windows default [%WINDPI%]: 
@@ -48,6 +49,8 @@ IF %NEONWSLVER% == jammy (IF NOT EXIST "%TEMP%\jammy.tar.gz" POWERSHELL.EXE -Com
 (ECHO [kWSL Inputs] && ECHO. && ECHO.   Distro: %DISTRO% && ECHO.     Path: %DISTROFULL% && ECHO. RDP Port: %RDPPRT% && ECHO. SSH Port: %SSHPRT% && ECHO.DPI Scale: %WINDPI% && ECHO.) > ".\logs\%TIME:~0,2%%TIME:~3,2%%TIME:~6,2% kWSL Inputs.log"
 
 ECHO:
+ECHO [%TIME:~0,8%] Creating Removal Script
+
 ECHO @COLOR 1F                                                                                                >  "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @ECHO Uninstall %DISTRO%?                                                                                >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @PAUSE                                                                                                   >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
@@ -66,12 +69,12 @@ ECHO @NETSH AdvFirewall Firewall del rule name="%DISTRO% KDE Connect"           
 ECHO @NETSH AdvFirewall Firewall del rule name="%DISTRO% KDEinit"                                             >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @RD /S /Q "%DISTROFULL%"                                                                                 >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 
-ECHO Fetching LXRunOffline
+ECHO [%TIME:~0,8%] Fetching LXRunOffline
 POWERSHELL.EXE -Command "Invoke-WebRequest -Uri %GETLXRUNOFFLINE% -OutFile '%DISTROFULL%\LxRunOffline-v3.5.0-msvc.zip'"
-ECHO Extracting LXRunOffline
+ECHO [%TIME:~0,8%] Extracting LXRunOffline
 POWERSHELL.EXE -ExecutionPolicy Bypass -Command "Expand-Archive -Path 'LxRunOffline-v3.5.0-msvc.zip -DestinationPath '%DISTROFULL%\LxRunOffline'"
 POWERSHELL.EXE -Command "Copy-Item '%DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination %DISTROFULL%"
-ECHO Installing kWSL Distro [%DISTRO%] to "%DISTROFULL%" & ECHO This will take a few minutes, please wait...
+ECHO [%TIME:~0,8%] Installing kWSL Distro [%DISTRO%] to "%DISTROFULL%" & ECHO This will take a few minutes, please wait...
 IF %DEFEXL%==X (POWERSHELL.EXE -Command "wget %GETGISTCODE% -UseBasicParsing -OutFile '%DISTROFULL%\excludeWSL.ps1'" & START /WAIT /MIN "Add exclusions in Windows Defender" "POWERSHELL.EXE" "-ExecutionPolicy" "Bypass" "-Command" ".\excludeWSL.ps1" "%DISTROFULL%")
 
 ECHO:& ECHO [%TIME:~0,8%] Importing distro userspace (~1m30s)
@@ -211,6 +214,7 @@ SET RUNEND=%date% @ %time:~0,5%
 CD %DISTROFULL% 
 
 ECHO:
+ECHO [%TIME:~0,8%] Prompt for account creation
 SET /p XU=Enter name of primary user for %DISTRO%: 
 POWERSHELL -Command $prd = read-host "Enter password for %XU%" -AsSecureString ; $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($prd) ; [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) > .tmp & set /p PWO=<.tmp
 %GO% "useradd -m -p nulltemp -s /bin/bash %XU%"
@@ -229,14 +233,14 @@ COPY /y /b kWSL._+.tmpsec.txt "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp" > NUL
 DEL /Q kWSL._ .tmp*.* > NUL
 
 ECHO:
-ECHO Open Windows Firewall Ports for xRDP, SSH, mDNS...
+ECHO [%TIME:~0,8%] Open Windows Firewall Ports for xRDP, SSH, mDNS...
 NETSH AdvFirewall Firewall add rule name="%DISTRO% xRDP" dir=in action=allow protocol=TCP localport=%RDPPRT% > NUL
 NETSH AdvFirewall Firewall add rule name="%DISTRO% Secure Shell" dir=in action=allow protocol=TCP localport=%SSHPRT% > NUL
 NETSH AdvFirewall Firewall add rule name="%DISTRO% KDE Connect" dir=in action=allow program="%DISTROFULL%\rootfs\usr\lib\x86_64-linux-gnu\libexec\kdeconnectd" enable=yes > NUL
 NETSH AdvFirewall Firewall add rule name="%DISTRO% KDEinit" dir=in action=allow program="%DISTROFULL%\rootfs\usr\bin\kdeinit5" enable=yes > NUL
 START /MIN "%DISTRO% Init" WSL ~ -u root -d %DISTRO% -e initwsl 2
 
-ECHO Building RDP Connection file, Console link, Init system...
+ECHO [%TIME:~0,8%] Building RDP Connection file, Console link, Init system...
 
 ECHO @START /MIN "%DISTRO%" WSLCONFIG.EXE /t %DISTRO%                  >  "%DISTROFULL%\Init.cmd"
 ECHO @Powershell.exe -Command "Start-Sleep 3"                          >> "%DISTROFULL%\Init.cmd"
@@ -246,7 +250,7 @@ ECHO @WSL ~ -u %XU% -d %DISTRO% > "%DISTROFULL%\%DISTRO% (%XU%) Console.cmd"
 POWERSHELL -Command "Copy-Item '%DISTROFULL%\%DISTRO% (%XU%) Console.cmd' ([Environment]::GetFolderPath('Desktop'))"
 POWERSHELL -Command "Copy-Item '%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp' ([Environment]::GetFolderPath('Desktop'))"
 
-ECHO Building Scheduled Task...
+ECHO [%TIME:~0,8%] Building Scheduled Task...
 POWERSHELL -C "$WAI = (whoami) ; (Get-Content .\rootfs\tmp\kWSL\kWSL.xml).replace('AAAA', $WAI) | Set-Content .\rootfs\tmp\kWSL\kWSL.xml"
 POWERSHELL -C "$WAC = (pwd)    ; (Get-Content .\rootfs\tmp\kWSL\kWSL.xml).replace('QQQQ', $WAC) | Set-Content .\rootfs\tmp\kWSL\kWSL.xml"
 SCHTASKS /Create /TN:%DISTRO% /XML .\rootfs\tmp\kWSL\kWSL.xml /F
@@ -263,7 +267,7 @@ ECHO:  - (Re)launch init from the Task Scheduler or by running the following com
 ECHO:    schtasks /run /tn %DISTRO%
 ECHO: 
 
-ECHO: %DISTRO% Installation Complete!  GUI will start in a few seconds...  
+ECHO: [%TIME:~0,8%] %DISTRO% Installation Complete! GUI will start in a few seconds...  
 PING -n 6 LOCALHOST > NUL 
 START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp"
 CD ..
