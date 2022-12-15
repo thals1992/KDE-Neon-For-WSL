@@ -6,6 +6,7 @@ SET GITPRJ=KDE-Neon-For-WSL
 SET BRANCH=master
 SET BASE=https://github.com/%GITORG%/%GITPRJ%/raw/%BRANCH%
 SET GETLXRUNOFFLINE=https://github.com/DDoSolitary/LxRunOffline/releases/download/v3.5.0/LxRunOffline-v3.5.0-msvc.zip
+SET GETGISTCODE=https://gist.githubusercontent.com/noelbundick/9c804a710eb76e1d6a234b14abf42a52/raw/41a56a8fc20d360232b8735c322181a233f8ff5c/excludeWSL.ps1
 
 REM ## Enable WSL if required
 POWERSHELL -Command "$WSL = Get-WindowsOptionalFeature -Online -FeatureName 'Microsoft-Windows-Subsystem-Linux' ; if ($WSL.State -eq 'Disabled') {Enable-WindowsOptionalFeature -FeatureName $WSL.FeatureName -Online}"
@@ -69,14 +70,14 @@ ECHO Fetching LXRunOffline
 POWERSHELL.EXE -Command "Invoke-WebRequest -Uri %GETLXRUNOFFLINE% -OutFile '%DISTROFULL%\LxRunOffline-v3.5.0-msvc.zip'"
 ECHO Extracting LXRunOffline
 POWERSHELL.EXE -ExecutionPolicy Bypass -Command "Expand-Archive -Path 'LxRunOffline-v3.5.0-msvc.zip -DestinationPath '%DISTROFULL%\LxRunOffline'"
-POWERSHELL.EXE -Command "Copy-Item 'DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination %DISTROFULL%"
+POWERSHELL.EXE -Command "Copy-Item '%DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination %DISTROFULL%"
 ECHO Installing kWSL Distro [%DISTRO%] to "%DISTROFULL%" & ECHO This will take a few minutes, please wait...
-IF %DEFEXL%==X (POWERSHELL.EXE -Command "wget %BASE%/excludeWSL.ps1 -UseBasicParsing -OutFile '%DISTROFULL%\excludeWSL.ps1'" & START /WAIT /MIN "Add exclusions in Windows Defender" "POWERSHELL.EXE" "-ExecutionPolicy" "Bypass" "-Command" ".\excludeWSL.ps1" "%DISTROFULL%" &  DEL ".\excludeWSL.ps1")
+IF %DEFEXL%==X (POWERSHELL.EXE -Command "wget %GETGISTCODE% -UseBasicParsing -OutFile '%DISTROFULL%\excludeWSL.ps1'" & START /WAIT /MIN "Add exclusions in Windows Defender" "POWERSHELL.EXE" "-ExecutionPolicy" "Bypass" "-Command" ".\excludeWSL.ps1" "%DISTROFULL%")
 
 ECHO:& ECHO [%TIME:~0,8%] Importing distro userspace (~1m30s)
 IF %NEONWSLVER% == bionic (START /WAIT /MIN "Installing Ubuntu Bionic Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\bionic.tar.gz" "-d" "%DISTROFULL%")
 IF %NEONWSLVER% == focal (START /WAIT /MIN "Installing Ubuntu Focal Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\focal.tar.gz" "-d" "%DISTROFULL%")
-IF %NEONWSLVER% == jammy START /WAIT /MIN "Installing Ubuntu Jammy Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\jammy.tar.gz" "-d" "%DISTROFULL%")
+IF %NEONWSLVER% == jammy (START /WAIT /MIN "Installing Ubuntu Jammy Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\jammy.tar.gz" "-d" "%DISTROFULL%")
 
 (FOR /F "usebackq delims=" %%v IN (`PowerShell -Command "whoami"`) DO set "WAI=%%v") & ICACLS "%DISTROFULL%" /grant "%WAI%":(CI)(OI)F > NUL
 (COPY /Y "%TEMP%\LxRunOffline.exe" "%DISTROFULL%" > NUL ) & "%DISTROFULL%\LxRunOffline.exe" sd -n "%DISTRO%"
@@ -106,7 +107,7 @@ ECHO [%TIME:~0,8%] Update repositories and clone kWSL repo (~1m15s)
 :jammy-sources
 ECHO [%TIME:~0,8%] Update repositories and clone kWSL repo (~1m15s)
 %GO% "echo 'deb http://archive.ubuntu.com/ubuntu/ jammy main restricted universe' > /etc/apt/sources.list"
-%GO% "echo 'deb http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe' >> /etc/apt/sources.list"
+%GO% "echo 'deb http://archive.ubuntu.com/ubuntu/ jamm-updates main restricted universe' >> /etc/apt/sources.list"
 %GO% "echo 'deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted universe' >> /etc/apt/sources.list"
 %GO% "echo 'deb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main' > /etc/apt/sources.list.d/mozilla.list"
 %GO% "echo 'deb http://archive.neon.kde.org/user/ jammy main' >>  /etc/apt/sources.list.d/neon.list"
