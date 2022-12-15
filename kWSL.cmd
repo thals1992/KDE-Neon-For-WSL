@@ -17,14 +17,8 @@ FOR /f "delims=" %%a in ('powershell -ExecutionPolicy bypass -command "%TEMP%\wi
 CLS && SET RUNSTART=%date% @ %time:~0,5%
 IF EXIST .\CMD.EXE CD ..\..
 
-ECHO [kWSL Installer: Modified December 12th, 2022]
+ECHO [kWSL Installer: Modified December 14th, 2022]
 ECHO:
-ECHO Set a name for this KDE Neon instance.  Hit Enter to use default. 
-SET DISTRO=NeonWSL& SET /p DISTRO=Keep this name simple, no space or underscore characters [NeonWSL]: 
-IF EXIST "%DISTRO%" (ECHO. & ECHO Folder exists with that name, choose a new folder name. & PAUSE & GOTO DI)
-WSL.EXE -d %DISTRO% -e . > "%TEMP%\InstCheck.tmp"
-FOR /f %%i in ("%TEMP%\InstCheck.tmp") do set CHKIN=%%~zi 
-IF %CHKIN% == 0 (ECHO. & ECHO There is a WSL distribution registered with that name; uninstall it or choose a new name. & PAUSE & GOTO DI)
 SET RDPPRT=3399& SET /p RDPPRT=Port number for xRDP traffic or hit Enter to use default [3399]: 
 SET SSHPRT=3322& SET /p SSHPRT=Port number for SSHd traffic or hit Enter to use default [3322]: 
                  SET /p WINDPI=Set a custom DPI scale, or hit Enter for Windows default [%WINDPI%]: 
@@ -39,7 +33,13 @@ IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
 SET GO="%DISTROFULL%\LxRunOffline.exe" r -n "%DISTRO%" -c
 
 REM ## Download Ubuntu and install packages
-SET NEONWSLVER=focal& SET /p WSLVER=Which LTE version of Ubuntu do you want to use? Options are bionic (18.04) focal (20.04) or jammy (22.04) [focal]: 
+SET NEONWSLVER=focal& SET /p WSLVER=Which LTE version of Ubuntu do you want to use? Options are bionic (18.04), focal (20.04), or jammy (22.04) [focal]: 
+ECHO Set a name for this KDE Neon instance.  Hit Enter to use default. 
+:ope
+SET DISTRO=NeonWSL-%NEONWSLVER%& SET /p DISTRO=Keep this name simple, no space or underscore characters [NeonWSL-%NEONWSLVER%]:
+WSL.EXE -d %DISTRO% -e . > "%TEMP%\InstCheck.tmp"
+FOR /f %%i in ("%TEMP%\InstCheck.tmp") do set CHKIN=%%~zi 
+IF %CHKIN% == 0 (ECHO. & ECHO There is a WSL distribution registered with that name; uninstall it or choose a new name. & PAUSE & GOTO ope)
 IF %NEONWSLVER% == bionic (IF NOT EXIST "%TEMP%\bionic.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\bionic.tar.gz'")
 IF %NEONWSLVER% == focal (IF NOT EXIST "%TEMP%\focal.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\focal.tar.gz'")
 IF %NEONWSLVER% == jammy (IF NOT EXIST "%TEMP%\jammy.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/wsl/jammy/current/ubuntu-jammy-wsl-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\jammy.tar.gz'")
@@ -72,13 +72,19 @@ POWERSHELL.EXE -ExecutionPolicy Bypass -Command "Expand-Archive -Path 'LxRunOffl
 POWERSHELL.EXE -Command "Copy-Item 'DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination %DISTROFULL%"
 ECHO Installing kWSL Distro [%DISTRO%] to "%DISTROFULL%" & ECHO This will take a few minutes, please wait...
 IF %DEFEXL%==X (POWERSHELL.EXE -Command "wget %BASE%/excludeWSL.ps1 -UseBasicParsing -OutFile '%DISTROFULL%\excludeWSL.ps1'" & START /WAIT /MIN "Add exclusions in Windows Defender" "POWERSHELL.EXE" "-ExecutionPolicy" "Bypass" "-Command" ".\excludeWSL.ps1" "%DISTROFULL%" &  DEL ".\excludeWSL.ps1")
+
 ECHO:& ECHO [%TIME:~0,8%] Importing distro userspace (~1m30s)
-START /WAIT /MIN "Installing Distro Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\focal.tar.gz" "-d" "%DISTROFULL%"
+IF %NEONWSLVER% == bionic (START /WAIT /MIN "Installing Ubuntu Bionic Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\bionic.tar.gz" "-d" "%DISTROFULL%")
+IF %NEONWSLVER% == focal (START /WAIT /MIN "Installing Ubuntu Focal Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\focal.tar.gz" "-d" "%DISTROFULL%")
+IF %NEONWSLVER% == jammy START /WAIT /MIN "Installing Ubuntu Jammy Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\jammy.tar.gz" "-d" "%DISTROFULL%")
+
 (FOR /F "usebackq delims=" %%v IN (`PowerShell -Command "whoami"`) DO set "WAI=%%v") & ICACLS "%DISTROFULL%" /grant "%WAI%":(CI)(OI)F > NUL
 (COPY /Y "%TEMP%\LxRunOffline.exe" "%DISTROFULL%" > NUL ) & "%DISTROFULL%\LxRunOffline.exe" sd -n "%DISTRO%"
 
+IF %NEONWSLVER% == bionic (GOTO bionic-sources)
 IF %NEONWSLVER% == focal (GOTO focal-sources)
-IF 
+IF %NEONWSLVER% == jammy (GOTO jammy-sources)
+ 
 :bionic-sources
 ECHO [%TIME:~0,8%] Update repositories and clone kWSL repo (~1m15s)
 %GO% "echo 'deb http://archive.ubuntu.com/ubuntu/ bionic main restricted universe' > /etc/apt/sources.list"
@@ -113,8 +119,9 @@ START /MIN /WAIT "Acquire Mozilla Seamonkey Keys" %GO% "apt-key adv --recv-keys 
 START /MIN /WAIT "apt-get update" %GO% "apt-get update 2> /tmp/apterr"
 FOR /F %%A in ("%DISTROFULL%\rootfs\tmp\apterr") do If %%~zA NEQ 0 GOTO APTRELY 
 
+IF %NEONWSLVER% == bionic (GOTO apt-fast-bionic)
 IF %NEONWSLVER% == focal (GOTO apt-fast-focal)
-
+IF %NEONWSLVER% == jammy (GOTO apt-fast-jammy)
 
 :apt-fast-bionic
 START /MIN /WAIT "apt-fast" %GO% "DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/kWSL/deb/aria2_1.35.0-1build1_amd64.deb /tmp/kWSL/deb/libaria2-0_1.35.0-1build1_amd64.deb /tmp/kWSL/deb/libssh2-1_1.8.0-2.1build1_amd64.deb /tmp/kWSL/deb/libc-ares2_1.15.0-1build1_amd64.deb ; chmod +x /tmp/kWSL/dist/usr/local/bin/apt-fast ; cp -p /tmp/kWSL/dist/usr/local/bin/apt-fast /usr/local/bin" > NUL
