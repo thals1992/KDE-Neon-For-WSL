@@ -14,7 +14,8 @@ echo === Running in elevated session:
 echo Script file : %~f0
 echo Arguments   : %*
 echo Working dir : %cd%
-
+ 
+ :BEGIN
 COLOR 1F
 SET GITORG=thals1992
 SET GITPRJ=KDE-Neon-For-WSL
@@ -84,11 +85,12 @@ ECHO @NETSH AdvFirewall Firewall del rule name="%DISTRO% KDE Connect"           
 ECHO @NETSH AdvFirewall Firewall del rule name="%DISTRO% KDEinit"                                             >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 ECHO @RD /S /Q "%DISTROFULL%"                                                                                 >> "%DISTROFULL%\Uninstall %DISTRO%.cmd"
 
+
 ECHO [%TIME:~0,8%] Fetching LXRunOffline
-POWERSHELL.EXE -Command "Invoke-WebRequest -Uri %GETLXRUNOFFLINE% -OutFile '%DISTROFULL%\LxRunOffline-v3.5.0-msvc.zip'"
+IF NOT EXIST "%DISTROFULL%\LxRunOffline-v3.5.0-msvc.zip" POWERSHELL.EXE -Command "Invoke-WebRequest -Uri %GETLXRUNOFFLINE% -OutFile '%DISTROFULL%\LxRunOffline-v3.5.0-msvc.zip'"
 ECHO [%TIME:~0,8%] Extracting LXRunOffline
-POWERSHELL.EXE -ExecutionPolicy Bypass -Command "Expand-Archive -Path 'LxRunOffline-v3.5.0-msvc.zip -DestinationPath '%DISTROFULL%\LxRunOffline'"
-POWERSHELL.EXE -Command "Copy-Item '%DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination %DISTROFULL%"
+IF NOT EXIST "%DISTROFULL%\LxRunOffline\LxRunOffline.exe" POWERSHELL.EXE -ExecutionPolicy Bypass -Command "Expand-Archive -Path 'LxRunOffline-v3.5.0-msvc.zip -DestinationPath '%DISTROFULL%\LxRunOffline'"
+IF NOT EXIST "%DISTROFULL%\LxRunOffline.exe" POWERSHELL.EXE -Command "Copy-Item '%DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination %DISTROFULL%"
 ECHO [%TIME:~0,8%] Installing kWSL Distro [%DISTRO%] to "%DISTROFULL%" & ECHO This will take a few minutes, please wait...
 IF %DEFEXL%==X (POWERSHELL.EXE -Command "wget %GETGISTCODE% -UseBasicParsing -OutFile '%DISTROFULL%\excludeWSL.ps1'" & START /WAIT /MIN "Add exclusions in Windows Defender" "POWERSHELL.EXE" "-ExecutionPolicy" "Bypass" "-Command" ".\excludeWSL.ps1" "%DISTROFULL%")
 
