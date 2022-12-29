@@ -15,7 +15,7 @@ echo Script file : %~f0
 echo Arguments   : %*
 echo Working dir : %cd%
  
- :BEGIN
+:BEGIN
 COLOR 1F
 SET GITORG=thals1992
 SET GITPRJ=KDE-Neon-For-WSL
@@ -225,7 +225,7 @@ SET /A SESMAN = %RDPPRT% - 50
 %GO% "cp -Rp /tmp/kWSL/dist/* / ; cp -Rp /tmp/kWSL/dist/etc/skel/.cache /root ; cp -Rp /tmp/kWSL/dist/etc/skel/.config /root ; cp -Rp /tmp/kWSL/dist/etc/skel/.local /root"
 START /MIN /WAIT "Updates for WSL1 Compatibility" "%DISTROFULL%\LxRunOffline.exe" "r" "-n" "%DISTRO%" "-c" "dpkg -i /tmp/kWSL/deb/libkf5activitiesstats*.deb /tmp/kWSL/deb/kactivitymanagerd*.deb /tmp/kWSL/deb/kinfocenter*.deb /tmp/kWSL/deb/klassy*.deb"
 START /MIN /WAIT "DBUS WSL1 Packages" "%DISTROFULL%\LxRunOffline.exe" "r" "-n" "%DISTRO%" "-c" "dpkg --purge --force-all dbus dbus-x11 libdbus-1-3 dbus-user-session ; dpkg -i --force-all /tmp/kWSL/deb-dbus/libdbus-1-3_*.deb /tmp/kWSL/deb-dbus/dbus_*.deb /tmp/kWSL/deb-dbus/dbus-x11_*.deb /tmp/kWSL/deb-dbus/xdg-desktop-portal_*.deb /tmp/kWSL/deb-dbus/libdconf1_*.deb"
-%GO% "apt-mark hold dbus dbus-x11 kactivitymanagerd kinfocenter libdbus-1-3 libkf5activitiesstats1 xdg-desktop-portal libdconf1" > NUL
+rem %GO% "apt-mark hold dbus dbus-x11 kactivitymanagerd kinfocenter libdbus-1-3 libkf5activitiesstats1 xdg-desktop-portal libdconf1" > NUL
 
 SET RUNEND=%date% @ %time:~0,5%
 CD %DISTROFULL% 
@@ -341,10 +341,8 @@ ECHO:
 ECHO:  - (Re)launch init from the Task Scheduler or by running the following command: 
 ECHO:    schtasks /run /tn %DISTRO%
 ECHO: 
-
 ECHO: [%TIME:~0,8%] %DISTRO% Installation Complete! GUI will start in a few seconds...  
 PING -n 6 LOCALHOST > NUL 
 START "Remote Desktop Connection" "MSTSC.EXE" "/V" "%DISTROFULL%\%DISTRO% (%XU%) Desktop.rdp"
 CD ..
-ECHO: 
 :ENDSCRIPT
