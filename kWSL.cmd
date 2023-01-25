@@ -42,7 +42,7 @@ SET SSHPRT=3322& SET /p SSHPRT=Port number for SSHd traffic or hit Enter to use 
                  SET /p WINDPI=Set a custom DPI scale, or hit Enter for Windows default [%WINDPI%]: 
 FOR /f "delims=" %%a in ('PowerShell -Command "%WINDPI% * 96" ') do set "LINDPI=%%a"
 FOR /f "delims=" %%a in ('PowerShell -Command 40 * "%WINDPI%" ') do set "KPANEL=%%a"
-SET DEFEXL=NONO& SET /p DEFEXL=[Not recommended!] Type X to eXclude from Windows Defender: 
+SET DEFEXL=NONO& SET /p DEFEXL=[Not recommended, but speeds up the process] Type X to eXclude from Windows Defender: 
 REM ## Ask for WSL 1 or 2
 SET WSLVER=1& SET /p WSLVER=Please specify if you want this instance to run as WSL1 or WSL2 [1]: 
 REM ## Download Ubuntu and install packages
@@ -97,6 +97,7 @@ ECHO [%TIME:~0,8%] Extracting LXRunOffline
 IF NOT EXIST "%DISTROFULL%\LxRunOffline\LxRunOffline.exe" POWERSHELL.EXE -ExecutionPolicy Bypass -Command "Expand-Archive -Path 'LxRunOffline-v3.5.0-msvc.zip' -DestinationPath '%DISTROFULL%\LxRunOffline'"
 IF NOT EXIST "%DISTROFULL%\LxRunOffline.exe" POWERSHELL.EXE -Command "Copy-Item '%DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination '%DISTROFULL%'"
 POWERSHELL.EXE -Command "Copy-Item '%DISTROFULL%\LxRunOffline\LxRunOffline.exe' -Destination '%TEMP%'"
+rem Whitelist folder for windows defender
 IF %DEFEXL%==X (POWERSHELL.EXE -Command "wget %GETGISTCODE% -UseBasicParsing -OutFile '%DISTROFULL%\excludeWSL.ps1'" & START /WAIT /MIN "Add exclusions in Windows Defender" "POWERSHELL.EXE" "-ExecutionPolicy" "Bypass" "-Command" ".\excludeWSL.ps1" "%DISTROFULL%")
 ECHO [%TIME:~0,8%] Installing kWSL Distro [%DISTRO%] to "%DISTROFULL%" & ECHO This will take a few minutes, please wait...
 ECHO:& ECHO [%TIME:~0,8%] Importing distro userspace (~1m30s)
