@@ -47,14 +47,14 @@ REM ## Ask for WSL 1 or 2
 SET WSLVER=1& SET /p WSLVER=Please specify if you want this instance to run as WSL1 or WSL2 [1]: 
 REM ## Download Ubuntu and install packages
 SET NEONWSLVER=focal& SET /p NEONWSLVER=Which LTE version of Ubuntu do you want to use? Options are bionic (18.04), focal (20.04), or jammy (22.04) [focal]: 
-ECHO Set a name for this KDE Neon instance.  Hit Enter to use default. 
 :ope
 rem ready for the path?
-SET DISTRODESTINATION=%USERPROFILE%& SET /p DISTRODESTINATION=Please provide a path to install this. By default it installs in the user folder. [%USERPROFILE%]
+SET DISTRODESTINATION=%USERPROFILE%& SET /p DISTRODESTINATION=Please provide a path to install this. By default it installs in the user folder. [%USERPROFILE%]:
 SET DISTROFULL=%DISTRODESTINATION%\%DISTRO%
 SET _rlt=%DISTROFULL:~2,2%
 rem not sure why we'd be using a remote folder
 rem IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
+ECHO Set a name for this KDE Neon instance.  Hit Enter to use default. 
 SET DISTRO=NeonWSL-%NEONWSLVER%& SET /p DISTRO=Keep this name simple, no space or underscore characters [NeonWSL-%NEONWSLVER%]:
 WSL.EXE -d %DISTRO% -e . > "%TEMP%\InstCheck.tmp"
 FOR /f %%i in ("%TEMP%\InstCheck.tmp") do set CHKIN=%%~zi 
