@@ -19,34 +19,25 @@ From an elevated CMD.EXE prompt change to your desired install directory and typ
 PowerShell -executionpolicy bypass -command "wget https://github.com/thals1992/KDE-Neon-For-WSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"
 ```
 
-You will be asked a few questions.  The install script will determine current DPI scaling, or set your own value if preferred:
+It will ask you a number of questions. At this time you should go with the default. bionic and jammy have not been verified, but all the steps are implemented. 
 
 ```
-[kWSL Installer 20210609]
+[kWSL Installer: Modified December 14th, 2022]
+Script started at TIME DATE
 
 Enter a unique name for your kWSL distro or hit Enter to use default.
-Keep this name simple, no space or underscore characters [kWSL]: Neon
 Port number for xRDP traffic or hit Enter to use default [3399]: 13399
 Port number for SSHd traffic or hit Enter to use default [3322]: 13322
 Set a custom DPI scale, or hit Enter for Windows default [1.5]: 1.25
-[Not recommended!] Type X to eXclude from Windows Defender:
-
-Installing kWSL Distro [Neon] to "C:\WSL Distros\Neon"
+[Not recommended!] Type X to eXclude from Windows Defender: X
+Please specify if you want this instance to run as WSL1 or WSL2 [1]: 1
+Which LTE version of Ubuntu do you want to use? Options are bionic (18.04), focal (20.04), or jammy (22.04) [focal]: focal
+Please provide a path to install this. By default it installs in the user folder. [%USERPROFILE%]: 
+Set a name for this KDE Neon instance.  Hit Enter to use default. 
+Keep this name simple, no space or underscore characters [NeonWSL-focal]:
 This will take a few minutes, please wait...
 ```
-
-The installer will download all the necessary packages to transform the [Focal base image](https://cloud-images.ubuntu.com/focal/current/) into KDE Neon User Edition.  Reference times will vary depending on system performance and the presence of antivrirus software.  A fast system/network can complete the install in about 10 minutes.
-
-```
-[ 2:47:40] Installing Ubuntu 20.04 LTS (~1m30s)
-[ 2:48:48] Git clone and update repositories (~1m15s)
-[ 2:49:49] Remove un-needed packages (~1m30s)
-[ 2:50:28] Configure apt-fast Downloader (~0m45s)
-[ 2:50:42] Remote Desktop Components (~2m45s)
-[ 2:52:22] KDE Neon 5.22 User Edition (~11m30s)
-[ 2:58:14] Install Web Browser and CRD (~1m30s)
-[ 2:58:41] Final clean-up (~0m45s)
-```
+At this point it will create the folder for Neon, create a removal script, acquire 
 
 Near the end of the script you will be prompted to create a non-root user.  This user will be automatically added to sudo'ers.
 
