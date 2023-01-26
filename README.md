@@ -17,13 +17,13 @@
 
 From an elevated CMD.EXE prompt change to your desired install directory and type/paste the following command:
 
-```
+```batch
 PowerShell -executionpolicy bypass -command "wget https://github.com/thals1992/KDE-Neon-For-WSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"
 ```
 
 It will ask you a number of questions. At this time you should go with the default. bionic and jammy have not been verified, but all the steps are implemented.
 
-```
+```text
 [kWSL Installer: Modified December 14th, 2022]
 Script started at TIME DATE
 
@@ -42,7 +42,7 @@ This will take a few minutes, please wait...
 
 Near the end of the script you will be prompted to create a non-root user.  This user will be automatically added to sudo'ers.
 
-```
+```text
 Open Windows Firewall Ports for xRDP, SSH, mDNS...
 Building RDP Connection file, Console link, Init system...
 Building Scheduled Task...
@@ -65,12 +65,14 @@ SUCCESS: The scheduled task "Neon" has successfully been created.
 **When the script completes you will be automatically logged-in to your KDE Neon Desktop!**
 
 ## Add configuration to Windows Terminal
+
 - Open up the following file:
   - ````%localappdata%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json````
 - Add the following JSON code to add three new profiles:
-  - Here, we're adding a profile for root, the placeholder "whoopsie" user, and the init profile. 
-    - The init profile is the same as the Windows Service created and can be ended by entering ```0``` and it will terminate that tab/window without needing to start/stop the service. 
-```
+  - Here, we're adding a profile for root, the placeholder "whoopsie" user, and the init profile.  
+    - The init profile is the same as the Windows Service created and can be ended by entering ```0``` and it will terminate that tab/window without needing to start/stop the service.  
+
+```json
             {
                 "guid": "{5f586e18-4020-5ce0-8544-13d847006eba}",
                 "hidden": false,
@@ -96,6 +98,7 @@ SUCCESS: The scheduled task "Neon" has successfully been created.
                 "startingDirectory": "~"
             }
 ```
+
 ## Configure kWSL to start at boot (like a service, no console window)
 
 - Right-click the task in Task Scheduler, click properties
