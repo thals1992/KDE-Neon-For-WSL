@@ -62,7 +62,7 @@ SUCCESS: The scheduled task "Neon" has successfully been created.
  Neon Installation Complete!  GUI will start in a few seconds...
 ```
 
-**When the script completes you will be automatically logged-in to your KDE Neon Desktop!**
+**When the script completes, Remote Desktop will be launched and it will automatically open your KDE Neon xRDP session!**
 
 ## Add configuration to Windows Terminal
 
