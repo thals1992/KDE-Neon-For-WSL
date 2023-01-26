@@ -1,25 +1,27 @@
 # [kWSL.cmd - KDE Neon for WSL](https://github.com/thals1992/KDE-Neon-For-WSL)
 
-  - Net-install of KDE Neon on WSL1 using xRDP.
-  - Runs on Windows 10 AMD64 and Server 2019/2022 (including Hyper-V Core)
-  - xRDP Display Server; no additional Xserver download/configuration required
-  - High-quality RDP audio playback; video playback and YouTube work well and maintains audio sync.
-  - If you want to accesss kWSL remotely, Chrome Remote Desktop is pre-installed (Never expose RDP servers to the Internet.) Configuration steps are [**here**](https://github.com/thals1992/kWSL/wiki/Enable-Chrome-Remote-Desktop)
+- Net-install of KDE Neon on WSL1 using xRDP.
+- Runs on Windows 10 AMD64 and Server 2019/2022 (including Hyper-V Core)
+- xRDP Display Server; no additional Xserver download/configuration required
+- High-quality RDP audio playback; video playback and YouTube work well and maintains audio sync.
+- If you want to access kWSL remotely, Chrome Remote Desktop is pre-installed (Never expose RDP servers to the Internet.) Configuration steps are [**here**](https://github.com/thals1992/kWSL/wiki/Enable-Chrome-Remote-Desktop).
 
 ![image](https://user-images.githubusercontent.com/33142753/100149597-d3d57d80-2e74-11eb-899a-a7476b016e27.png)
 
-**IMPORTANT!** 
- - Windows 11 requires 22H2 Update *(Sun Valley 2, September 2022)*
- - Windows Server / Windows 10 require latest updates from Windows Update.
+**IMPORTANT!**
+
+- Windows 11 requires 22H2 Update *(Sun Valley 2, September 2022)*
+- Windows Server / Windows 10 require latest updates from Windows Update.
 
 ## INSTALL INSTRUCTIONS
+
 From an elevated CMD.EXE prompt change to your desired install directory and type/paste the following command:
 
 ```
 PowerShell -executionpolicy bypass -command "wget https://github.com/thals1992/KDE-Neon-For-WSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"
 ```
 
-It will ask you a number of questions. At this time you should go with the default. bionic and jammy have not been verified, but all the steps are implemented. 
+It will ask you a number of questions. At this time you should go with the default. bionic and jammy have not been verified, but all the steps are implemented.
 
 ```
 [kWSL Installer: Modified December 14th, 2022]
@@ -37,7 +39,6 @@ Set a name for this KDE Neon instance.  Hit Enter to use default.
 Keep this name simple, no space or underscore characters [NeonWSL-focal]:
 This will take a few minutes, please wait...
 ```
-At this point it will create the folder for Neon, create a removal script, acquire 
 
 Near the end of the script you will be prompted to create a non-root user.  This user will be automatically added to sudo'ers.
 
@@ -61,24 +62,57 @@ SUCCESS: The scheduled task "Neon" has successfully been created.
  Neon Installation Complete!  GUI will start in a few seconds...
 ```
 
-**When the script completes you will be logged-in to your KDE Neon Desktop.** 
+**When the script completes you will be automatically logged-in to your KDE Neon Desktop!**
 
+## Add configuration to Windows Terminal
+- Open up the following file:
+  - ````%localappdata%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json````
+- Add the following JSON code to add three new profiles:
+  - Here, we're adding a profile for root, the placeholder "whoopsie" user, and the init profile. 
+    - The init profile is the same as the Windows Service created and can be ended by entering ```0``` and it will terminate that tab/window without needing to start/stop the service. 
+```
+            {
+                "guid": "{5f586e18-4020-5ce0-8544-13d847006eba}",
+                "hidden": false,
+                "name": "NeonWSL (root)",
+                "source": "Windows.Terminal.Wsl"
+            },
+            {
+                "colorScheme": "Campbell",
+                "commandline": "C:\\WINDOWS\\system32\\WSL.exe ~ -u whoopsie -d NeonWSL",
+                "guid": "{4228dd61-1063-4eb6-8366-424744fd0cd4}",
+                "hidden": false,
+                "icon": "ms-appx:///ProfileIcons/{9acb9455-ca41-5af7-950f-6bca1bc9722f}.png",
+                "name": "NeonWSL",
+                "startingDirectory": "~"
+            },
+            {
+                "colorScheme": "Campbell",
+                "commandline": "C:\\WINDOWS\\system32\\WSL.EXE ~ -u root -d NeonWSL -e initwsl 2",
+                "guid": "{e70d6a43-997e-424c-abf0-5705c60a3b71}",
+                "hidden": false,
+                "icon": "ms-appx:///ProfileIcons/{9acb9455-ca41-5af7-950f-6bca1bc9722f}.png",
+                "name": "NeonWSL Init",
+                "startingDirectory": "~"
+            }
+```
 ## Configure kWSL to start at boot (like a service, no console window)
 
- - Right-click the task in Task Scheduler, click properties
- - Click the checkbox for **Run whether user is logged on or not** and click **OK**
- - Enter your Windows credentials when prompted
- 
+- Right-click the task in Task Scheduler, click properties
+- Click the checkbox for **Run whether user is logged on or not** and click **OK**
+- Enter your Windows credentials when prompted
+
  Reboot your PC when complete and kWSL will startup automatically.
 
 ## Convert WSL Instance
 
 Example of conversion to WSL2:
- - Stop WSL instance (Using default instance name _NeonWSL_ in this example):
+
+- Stop WSL instance (Using default instance name *NeonWSL* in this example):
  ````wslconfig /t NeonWSL````
- - Convert the instance to WSL2:
+- Convert the instance to WSL2:
  ````wsl --set-version NeonWSL 2````
- - Restart KDE Neon Instance:
+- Restart KDE Neon Instance:
  ````schtasks /run /tn NeonWSL````
 
 Restart the instance when the conversion is complete: `schtasks.exe /run /tn NeonWSL`
@@ -95,21 +129,21 @@ From a security standpoint, it would be best to fork this project so you (and on
 - Launch the script using your repository name:
  ```PowerShell -executionpolicy bypass -command "wget https://github.com/YOUR-REPO-NAME/kWSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"```
 
-## Quirks / Limitations / Additional Info:
+## Quirks / Limitations / Additional Info
 
 - When you log out out of a KDE session the WSL instance is restarted.  This is the equivilent to having a freshly-booted desktop environment at every login, but the 'reboot' process only takes about 5 seconds.  
 - kWSL should work fine with an X Server instead of xRDP but this has not been thoroughly tested.  The file ```/etc/profile.d/kWSL.sh``` contains WSL-centric environment variables that may need adjustment such as LIBGL_ALWAYS_INDIRECT.
-- Plasma-discover doesn't work in Server 2019 / Win 10 v.1809 -- The installer will remove it if you're running an affected OS. 
-- WSL1 Doesn't work with PolicyKit.  Enabled kdesu for apps needing elevated rights (plasma-discover, ksystemlog, muon, root console.)    
+- Plasma-discover doesn't work in Server 2019 / Win 10 v.1809 -- The installer will remove it if you're running an affected OS.
+- WSL1 Doesn't work with PolicyKit.  Enabled kdesu for apps needing elevated rights (plasma-discover, ksystemlog, muon, root console.)
 - KDE Lockscreen is disabled (due to policykit)  
-- Patched KDE Activity Manager to disable WAL in sqlite3. 
-- Mozilla Seamonkey is included as a stable/maintained browser. 
+- Patched KDE Activity Manager to disable WAL in sqlite3.
+- Mozilla Seamonkey is included as a stable/maintained browser.
 - QtWebEngine (Chromium-based) browsers like Falkon and Konqueror now work. (July/21)
 - Installed image consumes approximately 3 GB of disk space.
 - Apt-fast added to improve download speed and reliability.
 - Default installation uses the Breeze theme and Windows fonts (Segoe UI / Cascadia Code)
 - Compositor replaced with Picom for better RDP performance and includes the [Klassy](https://www.reddit.com/r/kde/comments/wju5g9/klassy_v40_window_decoration_application_style/) window decoration / application style plugin
-- This is a basic installation of KDE to save bandwidth.  If you want the **complete** KDE Desktop environment (+3GB Disk) run ```sudo pkcon -y install neon-all``` 
+- This is a basic installation of KDE to save bandwidth.  If you want the **complete** KDE Desktop environment (+3GB Disk) run ```sudo pkcon -y install neon-all```
 
 ![image](https://user-images.githubusercontent.com/33142753/100148485-33cb2480-2e73-11eb-932b-54e34b445575.png)
 
