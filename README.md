@@ -134,7 +134,7 @@ From a security standpoint, it would be best to fork this project so you (and on
 
 ## Quirks / Limitations / Additional Info
 
-- When you log out out of a KDE session the WSL instance is restarted.  This is the equivilent to having a freshly-booted desktop environment at every login, but the 'reboot' process only takes about 5 seconds.  
+- When you log out out of a KDE session the WSL instance is restarted.  This is the equivalent to having a freshly-booted desktop environment at every login, but the 'reboot' process only takes about 5 seconds.  
 - kWSL should work fine with an X Server instead of xRDP but this has not been thoroughly tested.  The file ```/etc/profile.d/kWSL.sh``` contains WSL-centric environment variables that may need adjustment such as LIBGL_ALWAYS_INDIRECT.
 - Plasma-discover doesn't work in Server 2019 / Win 10 v.1809 -- The installer will remove it if you're running an affected OS.
 - WSL1 Doesn't work with PolicyKit.  Enabled kdesu for apps needing elevated rights (plasma-discover, ksystemlog, muon, root console.)
@@ -146,7 +146,7 @@ From a security standpoint, it would be best to fork this project so you (and on
 - Apt-fast added to improve download speed and reliability.
 - Default installation uses the Breeze theme and Windows fonts (Segoe UI / Cascadia Code)
 - Compositor replaced with Picom for better RDP performance and includes the [Klassy](https://www.reddit.com/r/kde/comments/wju5g9/klassy_v40_window_decoration_application_style/) window decoration / application style plugin
-- This is a basic installation of KDE to save bandwidth.  If you want the **complete** KDE Desktop environment (+3GB Disk) run ```sudo pkcon -y install neon-all```
+- This is a base installation of KDE to save bandwidth.  If you want the full KDE Desktop environment **(OVER 3GB ADDITIONAL SPACE NEEDED!)** run ```sudo pkcon -y install neon-all```
 
 ![image](https://user-images.githubusercontent.com/33142753/100148485-33cb2480-2e73-11eb-932b-54e34b445575.png)
 
