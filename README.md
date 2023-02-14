@@ -1,10 +1,10 @@
-# [kWSL.cmd - KDE Neon for WSL](https://github.com/thals1992/KDE-Neon-For-WSL)
+# [kWSL.cmd - KDE Neon for WSL](https://github.com/NullDev/NeonWSL)
 
 - Net-install of KDE Neon on WSL1 using xRDP.
 - Runs on Windows 10 AMD64 and Server 2019/2022 (including Hyper-V Core)
 - xRDP Display Server; no additional Xserver download/configuration required
 - High-quality RDP audio playback; video playback and YouTube work well and maintains audio sync.
-- If you want to access kWSL remotely, Chrome Remote Desktop is pre-installed (Never expose RDP servers to the Internet.) Configuration steps are [**here**](https://github.com/thals1992/kWSL/wiki/Enable-Chrome-Remote-Desktop).
+- If you want to access kWSL remotely, Chrome Remote Desktop is pre-installed (Never expose RDP servers to the Internet.) Configuration steps are [**here**](https://github.com/DesktopECHO/kWSL/wiki/Enable-Chrome-Remote-Desktop).
 
 ![image](https://user-images.githubusercontent.com/33142753/100149597-d3d57d80-2e74-11eb-899a-a7476b016e27.png)
 
@@ -18,7 +18,7 @@
 From an elevated CMD.EXE prompt change to your desired install directory and type/paste the following command:
 
 ```batch
-PowerShell -executionpolicy bypass -command "wget https://github.com/thals1992/KDE-Neon-For-WSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"
+PowerShell -executionpolicy bypass -command "wget https://github.com/NullDev/NeonWSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"
 ```
 
 It will ask you a number of questions. At this time you should go with the default. bionic and jammy have not been verified, but all the steps are implemented.
@@ -127,10 +127,10 @@ Procedure is the same for switching back to WSL1: ````wsl --set-version NeonWSL 
 From a security standpoint, it would be best to fork this project so you (and only you) control the packages and files in the repository.
 
 - Sign into GitHub and fork this project
-- Edit ```kWSL.cmd```.  On line 2 you will see ```SET GITORG=thals1992``` - Change ```thals1992``` to the name of your own repository.
+- Edit ```kWSL.cmd```.  On line 2 you will see ```SET GITORG=NullDev``` - Change ```NullDev``` to the name of your own repository.
 - Customize the script any way you like.
 - Launch the script using your repository name:
- ```PowerShell -executionpolicy bypass -command "wget https://github.com/YOUR-REPO-NAME/kWSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"```
+ ```PowerShell -executionpolicy bypass -command "wget https://github.com/YOUR-REPO-NAME/NeonWSL/raw/master/kWSL.cmd -UseBasicParsing -OutFile kWSL.cmd ; .\kWSL.cmd"```
 
 ## Quirks / Limitations / Additional Info
 
