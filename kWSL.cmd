@@ -17,8 +17,8 @@ echo Working dir : %cd%
  
 :BEGIN
 COLOR 1F
-SET GITORG=thals1992
-SET GITPRJ=KDE-Neon-For-WSL
+SET GITORG=NullDev
+SET GITPRJ=NeonWSL
 SET BRANCH=master
 SET BASE=https://github.com/%GITORG%/%GITPRJ%/raw/%BRANCH%
 SET GETLXRUNOFFLINE=https://github.com/DDoSolitary/LxRunOffline/releases/download/v3.5.0/LxRunOffline-v3.5.0-msvc.zip
