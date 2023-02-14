@@ -34,7 +34,7 @@ FOR /f "delims=" %%a in ('powershell -ExecutionPolicy bypass -command "%TEMP%\wi
 CLS && SET RUNSTART=%date% @ %time:~0,5%
 IF EXIST .\CMD.EXE CD ..\..
 
-ECHO [kWSL Installer: Modified December 14th, 2022]
+ECHO [NeonWSL Installer: Modified Feb. 14th, 2022]
 ECHO:
 ECHO Script started at [%TIME:~0,8%] [%DATE%]
 SET RDPPRT=3399& SET /p RDPPRT=Port number for xRDP traffic or hit Enter to use default [3399]: 
