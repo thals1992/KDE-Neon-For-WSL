@@ -105,8 +105,11 @@ IF %NEONWSLVER% == bionic (START /WAIT /MIN "Installing Ubuntu Bionic Base..." "
 IF %NEONWSLVER% == focal (START /WAIT /MIN "Installing Ubuntu Focal Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\focal.tar.gz" "-d" "%DISTROFULL%")
 IF %NEONWSLVER% == jammy (START /WAIT /MIN "Installing Ubuntu Jammy Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\jammy.tar.gz" "-d" "%DISTROFULL%")
 (FOR /F "usebackq delims=" %%v IN (`PowerShell -Command "whoami"`) DO set "WAI=%%v")
-ICACLS "%DISTROFULL:~0,-1%" /grant "%WAI%":(CI)(OI)F
-(COPY /Y "%TEMP%\LxRunOffline.exe" "%DISTROFULL%" > NUL ) & "%DISTROFULL%\LxRunOffline.exe" sd -n "%DISTRO%"
+SET "I_DISTROFULL=%DISTROFULL%"
+IF %I_DISTROFULL:~-1%==\ SET I_DISTROFULL=%I_DISTROFULL:~0,-1%
+ICACLS "%I_DISTROFULL%" /grant "%WAI%":(CI)(OI)F > NUL
+(COPY /Y "%TEMP%\LxRunOffline.exe" "%DISTROFULL%" > NUL )
+"%DISTROFULL%\LxRunOffline.exe" sd -n "%DISTRO%"
 
 IF %NEONWSLVER% == bionic (GOTO bionic-sources)
 IF %NEONWSLVER% == focal (GOTO focal-sources)
