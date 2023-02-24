@@ -37,6 +37,8 @@ IF EXIST .\CMD.EXE CD ..\..
 ECHO [kWSL Installer: Modified December 14th, 2022]
 ECHO:
 ECHO Script started at [%TIME:~0,8%] [%DATE%]
+SET goto=jump& SET /p goto=Did the install break? Enter the nearest goto command:
+:jump
 SET RDPPRT=3399& SET /p RDPPRT=Port number for xRDP traffic or hit Enter to use default [3399]: 
 SET SSHPRT=3322& SET /p SSHPRT=Port number for SSHd traffic or hit Enter to use default [3322]: 
                  SET /p WINDPI=Set a custom DPI scale, or hit Enter for Windows default [%WINDPI%]: 
@@ -52,14 +54,14 @@ rem ready for the path?
 SET DISTRODESTINATION=%USERPROFILE%& SET /p DISTRODESTINATION=Please provide a path to install this. By default it installs in the user folder. [%USERPROFILE%]:
 ECHO Set a name for this KDE Neon instance.  Hit Enter to use default. 
 SET DISTRO=NeonWSL-%NEONWSLVER%& SET /p DISTRO=Keep this name simple, no space or underscore characters [NeonWSL-%NEONWSLVER%]:
-SET DISTROFULL=%DISTRODESTINATION%\%DISTRO%\
+SET DISTROFULL=%DISTRODESTINATION%\%DISTRO%
 echo Deploying to %DISTROFULL%.
 SET _rlt=%DISTROFULL:~2,2%
 rem not sure why we'd be using a remote folder
 rem IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
 WSL.EXE -d %DISTRO% -e . > "%TEMP%\InstCheck.tmp"
 FOR /f %%i in ("%TEMP%\InstCheck.tmp") do set CHKIN=%%~zi 
-SET GO="%DISTROFULL%LxRunOffline.exe" r -n "%DISTRO%" -c
+SET GO="%DISTROFULL%\LxRunOffline.exe" r -n "%DISTRO%" -c
 IF %CHKIN% == 0 (ECHO. & ECHO There is a WSL distribution registered with that name; uninstall it or choose a new name. & PAUSE & GOTO ope)
 IF %NEONWSLVER% == bionic (IF NOT EXIST "%TEMP%\bionic.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\bionic.tar.gz'")
 IF %NEONWSLVER% == focal (IF NOT EXIST "%TEMP%\focal.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\focal.tar.gz'")
@@ -137,6 +139,7 @@ ECHO [%TIME:~0,8%] Update repositories and clone kWSL repo (~1m15s)
 %GO% "echo 'deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted universe' >> /etc/apt/sources.list"
 %GO% "echo 'deb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main' > /etc/apt/sources.list.d/mozilla.list"
 %GO% "echo 'deb http://archive.neon.kde.org/user/ jammy main' >>  /etc/apt/sources.list.d/neon.list"
+%GO% "echo 'deb https://ppa.launchpadcontent.net/apt-fast/stable/ubuntu jammy main' >> /etc/apt/sources.list"
 %GO% "rm -rf /etc/apt/apt.conf.d/20snapd.conf /etc/rc2.d/S01whoopsie /etc/init.d/console-setup.sh" 
 
 :APTRELY
