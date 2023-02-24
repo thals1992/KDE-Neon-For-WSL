@@ -59,7 +59,7 @@ rem not sure why we'd be using a remote folder
 rem IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
 WSL.EXE -d %DISTRO% -e . > "%TEMP%\InstCheck.tmp"
 FOR /f %%i in ("%TEMP%\InstCheck.tmp") do set CHKIN=%%~zi 
-SET GO="%DISTROFULL%\LxRunOffline.exe" r -n "%DISTRO%" -c
+SET GO="%DISTROFULL%LxRunOffline.exe" r -n "%DISTRO%" -c
 IF %CHKIN% == 0 (ECHO. & ECHO There is a WSL distribution registered with that name; uninstall it or choose a new name. & PAUSE & GOTO ope)
 IF %NEONWSLVER% == bionic (IF NOT EXIST "%TEMP%\bionic.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\bionic.tar.gz'")
 IF %NEONWSLVER% == focal (IF NOT EXIST "%TEMP%\focal.tar.gz" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-wsl.rootfs.tar.gz -destination '%TEMP%\focal.tar.gz'")
@@ -105,9 +105,9 @@ ECHO:& ECHO [%TIME:~0,8%] Importing distro userspace (~1m30s)
 IF %NEONWSLVER% == bionic (START /WAIT /MIN "Installing Ubuntu Bionic Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\bionic.tar.gz" "-d" "%DISTROFULL%")
 IF %NEONWSLVER% == focal (START /WAIT /MIN "Installing Ubuntu Focal Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\focal.tar.gz" "-d" "%DISTROFULL%")
 IF %NEONWSLVER% == jammy (START /WAIT /MIN "Installing Ubuntu Jammy Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\jammy.tar.gz" "-d" "%DISTROFULL%")
-(FOR /F "usebackq delims=" %%v IN (`PowerShell -Command "whoami"`) DO set "WAI=%%v") & ICACLS "%DISTROFULL%" /grant "%WAI%":(CI)(OI)F > NUL
+(FOR /F "usebackq delims=" %%v IN (`PowerShell -Command "whoami"`) DO set "WAI=%%v") & ICACLS %DISTROFULL% /grant "%WAI%":(CI)(OI)F > NUL
 (COPY /Y "%TEMP%\LxRunOffline.exe" "%DISTROFULL%" > NUL ) & "%DISTROFULL%\LxRunOffline.exe" sd -n "%DISTRO%"
-
+echo %go%
 IF %NEONWSLVER% == bionic (GOTO bionic-sources)
 IF %NEONWSLVER% == focal (GOTO focal-sources)
 IF %NEONWSLVER% == jammy (GOTO jammy-sources)
