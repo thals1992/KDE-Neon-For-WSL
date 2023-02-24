@@ -50,12 +50,13 @@ SET NEONWSLVER=focal& SET /p NEONWSLVER=Which LTE version of Ubuntu do you want 
 :ope
 rem ready for the path?
 SET DISTRODESTINATION=%USERPROFILE%& SET /p DISTRODESTINATION=Please provide a path to install this. By default it installs in the user folder. [%USERPROFILE%]:
-SET DISTROFULL=%DISTRODESTINATION%\%DISTRO%
+ECHO Set a name for this KDE Neon instance.  Hit Enter to use default. 
+SET DISTRO=NeonWSL-%NEONWSLVER%& SET /p DISTRO=Keep this name simple, no space or underscore characters [NeonWSL-%NEONWSLVER%]:
+SET DISTROFULL=%DISTRODESTINATION%\%DISTRO%\
+echo Deploying to %DISTROFULL%.
 SET _rlt=%DISTROFULL:~2,2%
 rem not sure why we'd be using a remote folder
 rem IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
-ECHO Set a name for this KDE Neon instance.  Hit Enter to use default. 
-SET DISTRO=NeonWSL-%NEONWSLVER%& SET /p DISTRO=Keep this name simple, no space or underscore characters [NeonWSL-%NEONWSLVER%]:
 WSL.EXE -d %DISTRO% -e . > "%TEMP%\InstCheck.tmp"
 FOR /f %%i in ("%TEMP%\InstCheck.tmp") do set CHKIN=%%~zi 
 SET GO="%DISTROFULL%\LxRunOffline.exe" r -n "%DISTRO%" -c
